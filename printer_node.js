@@ -189,7 +189,7 @@ async function printNota(alltext, devPrinterName) {
         console.log(text);
         await execPromise(`printf '${text}\\n' >> /tmp/print.prn`);
     });
-    await execPromise(`printf '\\014' >> /tmp/print.prn`);
+    await execPromise(`printf '\\012' >> /tmp/print.prn`);
     console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
     await execPromise(`cat /tmp/print.prn > ${devPrinterName}`);
 }
