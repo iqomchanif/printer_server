@@ -185,12 +185,18 @@ async function printNota(alltext, devPrinterName) {
     texts=JSON.parse(alltext);
     // await execPromise(`printf "\\033@\\033g\\0330\\033\\103\\x29" > /tmp/print.prn`);
     // await execPromise(`printf "\\033@\\033g\\0330\\033C\\x29" > /tmp/print.prn`);
+    tinggiBaris=41;
     await execPromise(`printf "\\033@\\033g\\0330\\033C\\051" > /tmp/print.prn`);
     texts.forEach(async text=>{
         console.log(text);
         await execPromise(`printf '${text}\\n' >> /tmp/print.prn`);
+        tinggiBaris--;
     });
-    await execPromise(`printf '\\014' >> /tmp/print.prn`);
+    while(tinggiBaris > 0){
+        await execPromise(`printf '\\n' >> /tmp/print.prn`);
+        tinggiBaris--;
+    }
+    // await execPromise(`printf '\\014' >> /tmp/print.prn`);
     console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
     await execPromise(`cat /tmp/print.prn > ${devPrinterName}`);
 }
