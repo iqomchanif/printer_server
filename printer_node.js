@@ -183,12 +183,12 @@ async function cekNota(){
 
 async function printNota(alltext, devPrinterName) {
     texts=JSON.parse(alltext);
-    await execPromise(`printf "\\033@\\033g\\0330" > /tmp/print.prn`);
+    await execPromise(`printf "\\033@\\033g\\0330\\033\\103\\x29" > /tmp/print.prn`);
     texts.forEach(async text=>{
         console.log(text);
         await execPromise(`printf '${text}\\n' >> /tmp/print.prn`);
     });
-    // await execPromise(`printf '\\014' >> /tmp/print.prn`);
+    await execPromise(`printf '\\014' >> /tmp/print.prn`);
     console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
     await execPromise(`cat /tmp/print.prn > ${devPrinterName}`);
 }
@@ -213,6 +213,19 @@ class EscP {
 
     static line8() {
         return Buffer.from([0x1B,0x30]);
+    }
+
+    static FF(){
+        return Buffer.from([0x0C]);
+    }
+
+    static init() {
+        return Buffer.from([
+            0x1B, 0x40,
+            0x1B, 0x67,
+            0x1B, 0x30,
+            0x1B, 0x43, 41, // page length 36 lines, coba ubah 30/32/34/36
+        ]);
     }
 
 }
