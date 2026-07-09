@@ -204,8 +204,29 @@ async function printNota(alltext, devPrinterName) {
      await execPromise(`printf '\\r\\n' >> /tmp/print.prn`);
     // await execPromise(`printf '\\014' >> /tmp/print.prn`);
     console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
-    await execPromise(`cat /tmp/print.prn > ${devPrinterName}`);
+     printByManual(devPrinterName);
 }
+
+async function printByManual(devPrinterName){
+     await execPromise(`cat /tmp/print.prn > ${devPrinterName}`);
+}
+async function printByCUPS(){
+    const { stdout } = await execPromise(`lp -d LX-310 -o raw /tmp/print.prn`);
+    const jobId = stdout.match(/request id is (\S+)/)?.[1];
+
+    while (true) {
+    const { stdout: status } = await execPromise(`lpstat -W not-completed -o LX-310 || true`);
+
+    if (!status.includes(jobId)) {
+        break;
+    }
+
+    await new Promise(r => setTimeout(r, 500));
+    }
+
+    console.log('Job done:', jobId);
+}
+
 
 class EscP {
 
