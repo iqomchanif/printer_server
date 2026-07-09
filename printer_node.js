@@ -197,7 +197,7 @@ async function printNota(alltext, devPrinterName,taskID) {
     texts=JSON.parse(alltext);
     // await execPromise(`printf "\\033@\\033g\\0330\\033\\103\\x29" > /tmp/print.prn`);
     // await execPromise(`printf "\\033@\\033g\\0330\\033C\\x29" > /tmp/print.prn`);
-    tinggiBaris=41;
+    tinggiBaris=42;
     await execPromise(`printf "\\033@\\033g\\0330\\033C\\051" > /tmp/print.prn`);
 
     const fs = require('fs/promises');
