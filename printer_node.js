@@ -189,10 +189,11 @@ async function printNota(alltext, devPrinterName) {
     tinggiBaris=41;
     await execPromise(`printf "\\033@\\033g\\0330\\033C\\051" > /tmp/print.prn`);
 
+    const fs = require('fs/promises');
+
     for (const text of texts) {
         console.log(text);
-        finalText= text.replace(/'/g, "\\'");
-        await execPromise(`printf '${finalText}\\n' >> /tmp/print.prn`);
+        await fs.appendFile('/tmp/print.prn', text + '\n');
         tinggiBaris--;
     }
     while(tinggiBaris > 0){
