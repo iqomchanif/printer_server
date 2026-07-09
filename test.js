@@ -1,7 +1,9 @@
 const { usb } = require('usb');
+(async () => {
+    const dev = await usb.findDeviceByIds(0x04b8, 0x0046);
 
-const dev = usb.findByIds(0x04b8, 0x0046);
-
+    console.log(dev);
+})();
 console.log(dev);
 
 dev.open();
