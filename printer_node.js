@@ -162,6 +162,16 @@ client.on('message', (topic, message) => {
             if (data.type == 'invoice' || data.type =='surat-jalan') {
                 console.log("🖨️ Menambahkan nota ke antrian:", data);
                 antrianNota.push(data);
+            }else if(data.type=='pembatalan'){
+                task_id=data.task_id;
+                //cari data dengan task_id di antrianNota
+                index=antrianNota.findIndex(item => item.task_id === task_id);
+                if(index !== -1){
+                    antrianNota.splice(index, 1);
+                    console.log("🗑️ Nota dengan task_id", task_id, "dihapus dari antrian.");
+                }else{
+                    console.log("⚠️ Nota dengan task_id", task_id, "tidak ditemukan di antrian.");
+                }
             }
         }
     }
@@ -217,8 +227,9 @@ async function printNota(alltext, devPrinterName,taskID) {
     // await execPromise(`printf '\\014' >> /tmp/print.prn`);
      console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
      await printByManual(devPrinterName);
+    await successPrint(taskID);
      await new Promise(resolve => setTimeout(resolve, 2000));
-     await successPrint(taskID);
+    
 
     }catch(error){
         console.error("❌ Gagal mencetak nota:", error.message);
