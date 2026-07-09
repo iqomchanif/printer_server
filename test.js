@@ -1,29 +1,23 @@
 const { usb } = require('usb');
+
 (async () => {
-    const dev = await usb.findDeviceByIds(0x04b8, 0x0046);
+  const dev = await usb.findDeviceByIds(0x04b8, 0x0046);
 
-    console.log(dev);
+  await dev.open();
 
-    
-    dev.open();
-    console.dir(dev, { depth: null });
-    console.log(Object.keys(dev));
+  if (!dev.configuration) {
+    await dev.selectConfiguration(1);
+  }
 
-    const iface = dev.interfaces[0];
+  await dev.claimInterface(0);
 
-    // kalau error "kernel driver active", nanti perlu detach
-    if (iface.isKernelDriverActive()) {
-    iface.detachKernelDriver();
-    }
+  // coba baca dari endpoint IN 0x82
+  try {
+    const result = await dev.transferIn(2, 64); // endpoint number 2, length 64
+    console.log('status:', Buffer.from(result.data.buffer));
+  } catch (e) {
+    console.error('read error:', e);
+  }
 
-    iface.claim();
-
-    const epIn = iface.endpoints.find(e => e.direction === 'in');
-
-    console.log(epIn);
-
-    epIn.transfer(64, (err, data) => {
-    console.log('err:', err);
-    console.log('data:', data);
-    });
+  await dev.close();
 })();
