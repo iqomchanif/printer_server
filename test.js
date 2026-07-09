@@ -6,6 +6,7 @@ const { usb } = require('usb');
 
     
     dev.open();
+    console.dir(dev, { depth: null });
     console.log(Object.keys(dev));
 
     const iface = dev.interfaces[0];
