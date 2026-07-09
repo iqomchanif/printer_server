@@ -191,7 +191,7 @@ async function printNota(alltext, devPrinterName) {
 
     for (const text of texts) {
         console.log(text);
-        finalText= JSON.stringify(text);
+        finalText= text.replace(/'/g, "\\'");
         await execPromise(`printf '${finalText}\\n' >> /tmp/print.prn`);
         tinggiBaris--;
     }
