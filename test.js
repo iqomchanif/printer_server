@@ -2,6 +2,7 @@ const usb = require('usb');
 
 const dev = usb.findByIds(0x04b8, 0x0046);
 dev.open();
+console.log(Object.keys(usb));
 
 const iface = dev.interfaces[0];
 iface.claim();
