@@ -204,8 +204,8 @@ async function printNota(alltext, devPrinterName,taskID) {
 
     for (const text of texts) {
         console.log(text);
-        // await fs.appendFile('/tmp/print.prn', text + '\n');
-        await execPromise(`printf '${text}\\r\\n' >> /tmp/print.prn`);
+        await fs.appendFile('/tmp/print.prn', text + '\n');
+        // await execPromise(`printf '${text}\\r\\n' >> /tmp/print.prn`);
         tinggiBaris--;
     }
     while(tinggiBaris > 0){
