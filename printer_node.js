@@ -88,6 +88,16 @@ async function getDataNota(id,type){
     }
 }
 
+async function successPrint(task_id){
+      response= await axios.get(name_server + '/api/printer/success-job-printer/'+task_id);
+
+}
+
+async function failedPrint(task_id){
+      response= await axios.get(name_server + '/api/printer/failed-job-printer/'+task_id);
+
+}
+
 function getMacAddress() {
     console.log("🔍 trying get MAC Address ...");
     exec(`ip link show | grep -E "wlan|wlp|enp|elp|wlo|wlx" -A1 | grep ether | awk '{print $2}'`, (error, stdout, stderr) => {
@@ -175,14 +185,15 @@ async function cekNota(){
         devPrinterName= "/dev/usb/" + strname;
         if (fsPrinter.existsSync(devPrinterName)) {
             console.log("🖨️ Mencetak nota ke printer:", printerName);
-            await printNota(textNota,devPrinterName);
+            await printNota(textNota,devPrinterName,dataNota.task_id);
         }
     }
     setTimeout(cekNota, 1000); // Cek setiap 1 detik
 }
 
 
-async function printNota(alltext, devPrinterName) {
+async function printNota(alltext, devPrinterName,taskID) {
+    try{
     texts=JSON.parse(alltext);
     // await execPromise(`printf "\\033@\\033g\\0330\\033\\103\\x29" > /tmp/print.prn`);
     // await execPromise(`printf "\\033@\\033g\\0330\\033C\\x29" > /tmp/print.prn`);
@@ -193,7 +204,8 @@ async function printNota(alltext, devPrinterName) {
 
     for (const text of texts) {
         console.log(text);
-        await fs.appendFile('/tmp/print.prn', text + '\n');
+        // await fs.appendFile('/tmp/print.prn', text + '\n');
+        await execPromise(`printf '${text}\\r\\n' >> /tmp/print.prn`);
         tinggiBaris--;
     }
     while(tinggiBaris > 0){
@@ -203,8 +215,15 @@ async function printNota(alltext, devPrinterName) {
       await execPromise(`printf '\\r\\n' >> /tmp/print.prn`);
      await execPromise(`printf '\\r\\n' >> /tmp/print.prn`);
     // await execPromise(`printf '\\014' >> /tmp/print.prn`);
-    console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
-     printByManual(devPrinterName);
+     console.log(`🖨️ Mencetak nota ke printer ke ${devPrinterName}`);
+     await printByManual(devPrinterName);
+     await new Promise(resolve => setTimeout(resolve, 2000));
+     await successPrint(taskID);
+
+    }catch(error){
+        console.error("❌ Gagal mencetak nota:", error.message);
+        await failedPrint(taskID);
+    }
 }
 
 async function printByManual(devPrinterName){
